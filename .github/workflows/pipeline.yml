@@ -19,6 +19,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Debug jar
+        run: |
+          mvn clean package -X
+
       - name: Build and Test
         run: mvn -B clean verify
 
