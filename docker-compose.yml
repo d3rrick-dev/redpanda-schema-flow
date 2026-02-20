@@ -1,0 +1,49 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:v24.3.1
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 0
+      - --check=false
+      - --schema-registry-addr 0.0.0.0:8081
+      - --kafka-addr INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      - --advertise-kafka-addr INTERNAL://redpanda:29092,EXTERNAL://localhost:9092
+    ports:
+      - "9092:9092"
+      - "8081:8081" # Now Redpanda handles Schema Registry here!
+      - "9644:9644" # Admin API
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.8.0
+    container_name: redpanda-console
+    depends_on:
+      - redpanda
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_BROKERS: redpanda:29092
+      # Adding this allows the console to manage topics/config via Admin API
+      REDPANDA_ADMINAPI_ENABLED: "true"
+      REDPANDA_ADMINAPI_URLS: "http://redpanda:9644"
+      REDPANDA_SCHEMAREGISTRY_ENABLED: "true"
+      REDPANDA_SCHEMAREGISTRY_URLS: "http://redpanda:8081"
+
+# It's an overkill on my local machine / used redpanda schema registry instead
+#  schema-registry:
+#    image: confluentinc/cp-schema-registry:7.5.0 # Stable version for Redpanda compatibility
+#    hostname: schema-registry
+#    container_name: schema-registry
+#    depends_on:
+#      - redpanda
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+#      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://redpanda:29092'
+#      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081

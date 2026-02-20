@@ -29,6 +29,10 @@ This project implements a **Schema-First** approach. The data contract is define
 
 ---
 
+## ⚖️ Coding Standards
+* **Null Safety:** This project uses `@NonNullApi` at the package level.
+* **Explicit Intent:** Fields in `.avsc` are **Required** by default. Use Avro Unions `["null", "type"]` ONLY when a business case for optionality exists.
+
 ## 🚀 Quick Start
 
 ### 1. Prerequisites
