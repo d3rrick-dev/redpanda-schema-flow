@@ -2,10 +2,7 @@ package com.d3rrick.kafkawithavro.app.producer;
 
 import com.d3rrick.kafkawithavro.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -14,15 +11,18 @@ public class UserController {
 
     private final UserKafkaProducer userKafkaProducer;
 
-    @PostMapping("/{id}/{name}/{phoneNumber}")
-    public String sendUser(@PathVariable String id, @PathVariable String name, @PathVariable String phoneNumber) {
+    @PostMapping("/send")
+    public String sendUser(@RequestBody UserRequest request) {
         var user = User.newBuilder()
-                .setId(id)
-                .setName(name)
-                .setEmail(name.toLowerCase() + "@test.com")
-                .setPhoneNumber(phoneNumber)
+                .setId(request.id())
+                .setName(request.name())
+                .setEmail(request.email())
+                .setPhoneNumber(request.phoneNumber())
                 .build();
+
         userKafkaProducer.sendUser(user);
-        return "Sent user: " + name;
+        return "Sent user: " + request.name();
     }
+
+    public record UserRequest(String id, String name, String email, String phoneNumber){}
 }

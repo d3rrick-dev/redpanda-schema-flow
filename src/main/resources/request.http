@@ -1,10 +1,21 @@
 
 ###
-POST http://localhost:8080/users/123/test/90000
+POST http://localhost:8080/users/send
 Content-Type: application/json
+
+{
+  "id":"123",
+  "name":"Derrick",
+  "email":"derrick@hu.com",
+  "phoneNumber":"555-0199"
+}
+
 
 ###
 GET http://localhost:8080/actuator/health
 
 ###
 GET http://localhost:8080/actuator/prometheus
+
+### Analytics
+GET http://localhost:8080/analytics/domains/hu.com
