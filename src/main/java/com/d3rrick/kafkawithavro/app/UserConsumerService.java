@@ -12,8 +12,8 @@ public class UserConsumerService {
     @KafkaListener(topics = "${spring.kafka.topics.users}", groupId = "user-consumer-group")
     public void consume(User user) {
         log.info("Starting consumption of User event");
-        log.info("Received User Payload: [ID: {}, Name: {}, Email: {}]",
-                user.getId(), user.getName(), user.getEmail());
+        log.info("Received User Payload: [ID: {}, Name: {}, Email: {}, PhoneNumber: {}]",
+                user.getId(), user.getName(), user.getEmail(), user.getPhoneNumber());
 
         if (user.getName() == null || user.getName().isBlank()) {
             log.warn("Received User with missing name for ID: {}", user.getId());

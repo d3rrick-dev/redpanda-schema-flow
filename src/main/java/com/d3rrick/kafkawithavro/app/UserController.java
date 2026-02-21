@@ -14,12 +14,13 @@ public class UserController {
 
     private final UserKafkaProducer userKafkaProducer;
 
-    @PostMapping("/{id}/{name}")
-    public String sendUser(@PathVariable String id, @PathVariable String name) {
+    @PostMapping("/{id}/{name}/{phoneNumber}")
+    public String sendUser(@PathVariable String id, @PathVariable String name, @PathVariable String phoneNumber) {
         var user = User.newBuilder()
                 .setId(id)
                 .setName(name)
                 .setEmail(name.toLowerCase() + "@test.com")
+                .setPhoneNumber(phoneNumber)
                 .build();
         userKafkaProducer.sendUser(user);
         return "Sent user: " + name;

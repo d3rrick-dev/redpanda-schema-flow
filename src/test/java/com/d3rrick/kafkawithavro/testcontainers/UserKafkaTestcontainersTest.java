@@ -47,6 +47,7 @@ class UserKafkaTestcontainersTest {
                 .setId("ct-77")
                 .setName("testContainer")
                 .setEmail("testcontainer@redpanda.com")
+                .setPhoneNumber("90000")
                 .build();
 
         producer.sendUser(user);
@@ -65,6 +66,7 @@ class UserKafkaTestcontainersTest {
                 .setId("fail-1")
                 .setName("test")
                 .setEmail("fail@test.com")
+                .setPhoneNumber("90000")
                 .build();
 
         producer.sendUser(poisonUser);

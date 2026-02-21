@@ -31,4 +31,13 @@ class UserControllerTest {
 
         verify(producer, times(1)).sendUser(any(User.class));
     }
+
+    @Test
+    void shouldReturnSuccessMessageOnPostWithAddedPhoneField() throws Exception {
+        mockMvc.perform(post("/users/1/Derrick/9000"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Sent user: Derrick"));
+
+        verify(producer, times(1)).sendUser(any(User.class));
+    }
 }
