@@ -1,4 +1,4 @@
-package com.d3rrick.kafkawithavro.app;
+package com.d3rrick.kafkawithavro.app.consumer;
 
 import com.d3rrick.kafkawithavro.User;
 import lombok.extern.slf4j.Slf4j;

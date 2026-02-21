@@ -1,8 +1,8 @@
 package com.d3rrick.kafkawithavro.testcontainers;
 
 import com.d3rrick.kafkawithavro.User;
-import com.d3rrick.kafkawithavro.app.UserConsumerService;
-import com.d3rrick.kafkawithavro.app.UserKafkaProducer;
+import com.d3rrick.kafkawithavro.app.consumer.UserConsumerService;
+import com.d3rrick.kafkawithavro.app.producer.UserKafkaProducer;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ class UserKafkaTestcontainersTest {
         var capturedUser = userCaptor.getValue();
         assertThat(capturedUser).isNotNull();
         assertThat(user.getId()).isEqualTo(capturedUser.getId());
-        assertThat(user.getName()).isEqualTo(capturedUser.getName());
+        assertThat(user.getName().toUpperCase()).isEqualTo(capturedUser.getName());
         assertThat(capturedUser.getEmail()).contains("@redpanda.com");
     }
 

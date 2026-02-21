@@ -4,6 +4,8 @@ spring:
     topics:
       users: users-topic
       dlq: users-topic-dlt
+      processed: processed-users-topic
+
     listener:
       type: single
 
@@ -24,6 +26,16 @@ spring:
       properties:
         specific.avro.reader: true
 
+    streams:
+      application-id: user-processing-stream
+      bootstrap-servers:  ${spring.kafka.bootstrap-servers}
+      # This tells Streams how to handle data by default
+      properties:
+        default:
+          key:
+            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+          value:
+            serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 # Expose the Prometheus endpoint
 management:
   endpoints:

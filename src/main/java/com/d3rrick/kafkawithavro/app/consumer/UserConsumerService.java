@@ -1,4 +1,4 @@
-package com.d3rrick.kafkawithavro.app;
+package com.d3rrick.kafkawithavro.app.consumer;
 
 import com.d3rrick.kafkawithavro.User;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserConsumerService {
 
-    @KafkaListener(topics = "${spring.kafka.topics.users}", groupId = "user-consumer-group")
+    @KafkaListener(topics = "${spring.kafka.topics.processed}", groupId = "user-consumer-group")
     @RetryableTopic(
             attempts = "4",                                 // Total attempts (1 original + 3 retries)
             backoff = @Backoff(delay = 5000),               // 5 sec (5000 ms) delay between tries
-            dltStrategy = DltStrategy.FAIL_ON_ERROR,        // Send to DLT after all retries fail
-            autoCreateTopics = "true")
+            dltStrategy = DltStrategy.FAIL_ON_ERROR        // Send to DLT after all retries fail
+    )
     public void consume(User user) {
         log.info("Starting consumption of User event");
         log.info("Received User Payload: [ID: {}, Name: {}, Email: {}, PhoneNumber: {}]",
