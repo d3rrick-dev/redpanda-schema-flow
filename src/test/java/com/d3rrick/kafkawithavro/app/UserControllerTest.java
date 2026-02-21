@@ -25,7 +25,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturnSuccessMessageOnPost() throws Exception {
-        mockMvc.perform(post("/users/1/Derrick"))
+        mockMvc.perform(post("/users/1/Derrick/9000"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Sent user: Derrick"));
 
