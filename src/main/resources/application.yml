@@ -31,6 +31,12 @@ spring:
       bootstrap-servers:  ${spring.kafka.bootstrap-servers}
       # This tells Streams how to handle data by default
       properties:
+        # 1. How often to commit (default is 30,000ms / 30s)
+        # Setting this to 100ms makes it feel "real-time"
+        commit.interval.ms: 100
+        # 2. Disable the record cache
+        # If this is 0, every single event triggers an update immediately
+        cache.max.bytes.buffering: 0
         default:
           key:
             serde: org.apache.kafka.common.serialization.Serdes$StringSerde
