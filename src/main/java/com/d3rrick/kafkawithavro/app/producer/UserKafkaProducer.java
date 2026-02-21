@@ -1,4 +1,4 @@
-package com.d3rrick.kafkawithavro.app;
+package com.d3rrick.kafkawithavro.app.producer;
 
 import com.d3rrick.kafkawithavro.User;
 import lombok.RequiredArgsConstructor;

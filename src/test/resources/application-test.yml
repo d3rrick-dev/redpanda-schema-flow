@@ -3,6 +3,7 @@ spring:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     topics:
       users: users-topic
+      processed: processed-users-topic
 
     properties:
       schema.registry.url: mock://http://localhost:8081

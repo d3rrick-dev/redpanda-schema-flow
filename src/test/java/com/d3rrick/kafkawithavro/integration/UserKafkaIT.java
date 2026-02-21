@@ -1,8 +1,8 @@
 package com.d3rrick.kafkawithavro.integration;
 
 import com.d3rrick.kafkawithavro.User;
-import com.d3rrick.kafkawithavro.app.UserConsumerService;
-import com.d3rrick.kafkawithavro.app.UserKafkaProducer;
+import com.d3rrick.kafkawithavro.app.consumer.UserConsumerService;
+import com.d3rrick.kafkawithavro.app.producer.UserKafkaProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +35,7 @@ class UserKafkaIT {
 
         producer.sendUser(user);
         verify(consumer, timeout(5000)).consume(argThat(receivedUser ->
-                receivedUser.getName().equals("IntegrationTest")
+                receivedUser.getName().equals("IntegrationTest".toUpperCase())
         ));
     }
 }

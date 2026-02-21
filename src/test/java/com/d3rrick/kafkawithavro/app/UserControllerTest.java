@@ -1,6 +1,8 @@
 package com.d3rrick.kafkawithavro.app;
 
 import com.d3rrick.kafkawithavro.User;
+import com.d3rrick.kafkawithavro.app.producer.UserController;
+import com.d3rrick.kafkawithavro.app.producer.UserKafkaProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

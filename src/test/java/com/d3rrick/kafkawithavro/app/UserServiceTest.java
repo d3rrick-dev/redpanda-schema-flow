@@ -1,6 +1,7 @@
 package com.d3rrick.kafkawithavro.app;
 
 import com.d3rrick.kafkawithavro.User;
+import com.d3rrick.kafkawithavro.app.consumer.UserConsumerService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

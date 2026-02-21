@@ -2,6 +2,7 @@ spring:
   kafka:
     topics:
       users: users-topic
+      processed: processed-users-topic
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
