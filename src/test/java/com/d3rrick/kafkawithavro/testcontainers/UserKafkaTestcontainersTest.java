@@ -24,7 +24,7 @@ class UserKafkaTestcontainersTest extends BaseIntegrationTest {
     @BeforeEach
     void waitForStreams() {
         await()
-                .atMost(Duration.ofSeconds(20))
+                .atMost(Duration.ofSeconds(10))
                 .until(() -> factoryBean.getKafkaStreams() != null &&
                         factoryBean.getKafkaStreams().state().isRunningOrRebalancing());
     }
@@ -62,8 +62,8 @@ class UserKafkaTestcontainersTest extends BaseIntegrationTest {
         producer.sendUser(poisonUser);
 
         // 1. Verify 4 total attempts (1 original + 3 retries)
-        // timeout set to 20s because of the 5-second gaps in your logs
-        verify(consumerService, timeout(30000).times(4)).consume(any(User.class));
+        // timeout set to 20s because of the 1-second gaps in your logs
+        verify(consumerService, timeout(10000).times(4)).consume(any(User.class));
 
         // 2. Verify DLT Handler call
         verify(consumerService, timeout(10000)).handleDlt(
