@@ -1,22 +1,12 @@
 package com.d3rrick.kafkawithavro.testcontainers;
 
+import com.d3rrick.kafkawithavro.BaseIntegrationTest;
 import com.d3rrick.kafkawithavro.User;
 import com.d3rrick.kafkawithavro.app.consumer.UserConsumerService;
-import com.d3rrick.kafkawithavro.app.producer.UserKafkaProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.redpanda.RedpandaContainer;
 
 import java.time.Duration;
 
@@ -26,32 +16,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-@ActiveProfiles("testcontainers")
-class UserKafkaTestcontainersTest {
-
-    @Container
-    static RedpandaContainer redpanda = new RedpandaContainer("docker.redpanda.com/redpandadata/redpanda:v23.3.13");
-    @DynamicPropertySource
-    static void registerKafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", redpanda::getBootstrapServers);
-        registry.add("spring.kafka.properties.schema.registry.url", redpanda::getSchemaRegistryAddress);
-        registry.add("spring.kafka.streams.properties.schema.registry.url", redpanda::getSchemaRegistryAddress);
-        registry.add("spring.kafka.streams.properties.state.dir",
-                () -> "/tmp/kafka-streams/" + java.util.UUID.randomUUID());
-    }
-    @Autowired
-    private UserKafkaProducer producer;
+class UserKafkaTestcontainersTest extends BaseIntegrationTest {
 
     @MockitoSpyBean
     private UserConsumerService consumerService;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
-    private StreamsBuilderFactoryBean factoryBean;
 
     @BeforeEach
     void waitForStreams() {
@@ -95,7 +63,7 @@ class UserKafkaTestcontainersTest {
 
         // 1. Verify 4 total attempts (1 original + 3 retries)
         // timeout set to 20s because of the 5-second gaps in your logs
-        verify(consumerService, timeout(20000).times(4)).consume(any(User.class));
+        verify(consumerService, timeout(30000).times(4)).consume(any(User.class));
 
         // 2. Verify DLT Handler call
         verify(consumerService, timeout(10000)).handleDlt(

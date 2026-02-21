@@ -4,6 +4,10 @@ spring:
     topics:
       users: users-topic
       processed: processed-users-topic
+      streams:
+        cleanup:
+          on-startup: true
+          on-shutdown: true
 
     properties:
       schema.registry.url: mock://http://localhost:8081

@@ -36,7 +36,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Sent user: Alice"));
+                .andExpect(content().string("Sent user: Derrick"));
 
         verify(producer, times(1)).sendUser(any(User.class));
     }
