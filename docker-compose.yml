@@ -34,6 +34,23 @@ services:
       REDPANDA_SCHEMAREGISTRY_ENABLED: "true"
       REDPANDA_SCHEMAREGISTRY_URLS: "http://redpanda:8081"
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
 # It's an overkill on my local machine / used redpanda schema registry instead
 #  schema-registry:
 #    image: confluentinc/cp-schema-registry:7.5.0 # Stable version for Redpanda compatibility

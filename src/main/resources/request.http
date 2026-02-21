@@ -2,3 +2,9 @@
 ###
 POST http://localhost:8080/users/123/test/90000
 Content-Type: application/json
+
+###
+GET http://localhost:8080/actuator/health
+
+###
+GET http://localhost:8080/actuator/prometheus
