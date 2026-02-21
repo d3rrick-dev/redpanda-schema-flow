@@ -40,7 +40,7 @@ class UserKafkaTestcontainersTest {
     private UserConsumerService consumerService;
 
     @Test
-    void testActualProductionFlow() {
+    void actualProductionFlow() {
         var userCaptor = ArgumentCaptor.forClass(User.class);
 
         var user = User.newBuilder()
@@ -61,7 +61,7 @@ class UserKafkaTestcontainersTest {
     }
 
     @Test
-    void testDLQScenario() {
+    void retryandDLQScenario() {
         var poisonUser = User.newBuilder()
                 .setId("fail-1")
                 .setName("test")
@@ -70,8 +70,16 @@ class UserKafkaTestcontainersTest {
                 .build();
 
         producer.sendUser(poisonUser);
-        // verify that consume method was called exactly 3 times (1st attempt + 3 retries)
-        // count should be based on your FixedBackOff config (using default here)
-        verify(consumerService, timeout(15000).times(3)).consume(any(User.class));
+
+        // 1. Verify 4 total attempts (1 original + 3 retries)
+        // timeout set to 20s because of the 5-second gaps in your logs
+        verify(consumerService, timeout(20000).times(4)).consume(any(User.class));
+
+        // 2. Verify DLT Handler call
+        verify(consumerService, timeout(5000)).handleDlt(
+                any(User.class),
+                any(), // topic
+                any() // offset/Partition
+        );
     }
 }
