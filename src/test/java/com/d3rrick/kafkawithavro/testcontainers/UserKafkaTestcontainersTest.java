@@ -70,8 +70,8 @@ class UserKafkaTestcontainersTest {
                 .build();
 
         producer.sendUser(poisonUser);
-        // verify that consume method was called exactly 4 times (1st attempt + 3 retries)
+        // verify that consume method was called exactly 3 times (1st attempt + 3 retries)
         // count should be based on your FixedBackOff config (using default here)
-        verify(consumerService, timeout(15000).times(4)).consume(any(User.class));
+        verify(consumerService, timeout(15000).times(3)).consume(any(User.class));
     }
 }

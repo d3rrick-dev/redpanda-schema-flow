@@ -3,6 +3,9 @@ spring:
     bootstrap-servers: localhost:9092
     topics:
       users: users-topic
+      dlq: users-topic-dlt
+    listener:
+      type: single
 
     properties:
       schema.registry.url: http://localhost:8081

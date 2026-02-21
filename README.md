@@ -19,10 +19,14 @@
 ## 🏗 Architecture
 This project implements a **Schema-First** approach. The data contract is defined in `.avsc` files, ensuring that Producers and Consumers speak the exact same language.
 
+## The Flow
+`Main Topic `-> `Failure` -> `Retry Topic (wait)` -> `Main Topic` -> ... (repeat) → `DLQ`.
+
 
 
 ### 💎 Key Features
 * **Schema Evolution:** Backward-compatible field additions (e.g., `age`, `phoneNumber`).
+* **Retryable topic with timeouts and backoff.
 * **Resilience:** `DeadLetterPublishingRecoverer` with 3-step retry backoff logic.
 * **Type Safety:** Generated Java classes from Avro definitions.
 * **Dynamic Testing:** Integration tests run against actual Redpanda binaries via Testcontainers.
