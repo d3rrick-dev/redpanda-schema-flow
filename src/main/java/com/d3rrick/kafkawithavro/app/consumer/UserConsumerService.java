@@ -19,7 +19,7 @@ public class UserConsumerService {
     @KafkaListener(topics = "${spring.kafka.topics.processed}", groupId = "user-consumer-group")
     @RetryableTopic(
             attempts = "4",                                 // Total attempts (1 original + 3 retries)
-            backoff = @Backoff(delay = 5000),               // 5 sec (5000 ms) delay between tries
+            backoff = @Backoff(delay = 1000),               // 1 sec (1 ms) delay between tries
             dltStrategy = DltStrategy.FAIL_ON_ERROR        // Send to DLT after all retries fail
     )
     public void consume(User user) {
