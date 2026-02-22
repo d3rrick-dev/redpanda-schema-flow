@@ -41,7 +41,7 @@ public class UserStreamProcessor {
         // 2. Stateless Transformation (Standardization)
         KStream<String, User> processedStream = userKStream
                 .mapValues(user -> {
-                    user.setName(user.getName().toUpperCase());
+                    user.setName(user.getName().toString().toUpperCase());
                     return user;
                 });
 
