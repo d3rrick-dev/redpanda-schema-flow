@@ -8,10 +8,12 @@ import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.WindowStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
+import java.time.Duration;
 import java.util.Map;
 
 @Configuration
@@ -21,6 +23,7 @@ public class UserStreamProcessor {
 
     private SpecificAvroSerde<User> userSerde() {
         SpecificAvroSerde<User> serde = new SpecificAvroSerde<>();
+        // In production, these should come from @Value or application.yml
         var config = Map.of(
                 "schema.registry.url", "http://localhost:8081",
                 "specific.avro.reader", "true"
@@ -30,32 +33,45 @@ public class UserStreamProcessor {
     }
 
     @Bean
-    public KStream<String, User> kStream(StreamsBuilder streamsBuilder) {
+    public KStream<String, User> userProcessingTopology(StreamsBuilder streamsBuilder) {
+        // 1. Single Source: Read once, process many
         KStream<String, User> userKStream = streamsBuilder.stream("users-topic",
                 Consumed.with(Serdes.String(), userSerde()));
 
-        // 1. Stateless Transformation
+        // 2. Stateless Transformation (Standardization)
         KStream<String, User> processedStream = userKStream
-//                .filter((key, user) -> !user.getName().equalsIgnoreCase("test"))
                 .mapValues(user -> {
                     user.setName(user.getName().toUpperCase());
                     return user;
                 });
 
+        // Push to downstream topic immediately
         processedStream.to("processed-users-topic", Produced.with(Serdes.String(), userSerde()));
 
-        // 2. Stateful Aggregation (The Leaderboard)
-        processedStream
-                .groupBy((key, user) -> {
-                    var email = user.getEmail();
-                    return email.substring(email.indexOf("@") + 1);
-                }, Grouped.with(Serdes.String(), userSerde()))
-                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("domain-counts-store")
+        // 3. Grouping Logic (Re-used for both aggregations)
+        KGroupedStream<String, User> groupedByDomain = processedStream.groupBy((key, user) -> {
+            var email = user.getEmail();
+            return email.substring(email.indexOf("@") + 1);
+        }, Grouped.with(Serdes.String(), userSerde()));
+
+        // --- AGGREGATION A: Total Count (Global Leaderboard) ---
+        groupedByDomain.count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("domain-counts-store")
                         .withKeySerde(Serdes.String())
                         .withValueSerde(Serdes.Long()))
                 .toStream()
-                .peek((domain, count) -> log.info("Domain Leaderboard -> {}: {}", domain, count));
+                .peek((domain, count) -> log.info("Total Leaderboard -> {}: {}", domain, count));
 
-        return userKStream;
+        // --- AGGREGATION B: Windowed Count (Real-time Velocity) ---
+        // Suppression to emit only final window results
+        groupedByDomain
+                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30)))
+                .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("domain-velocity-store")
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(Serdes.Long()))
+                .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
+                .toStream()
+                .peek((windowedKey, count) -> log.info("1-Min Velocity for {}: {}", windowedKey.key(), count));
+
+        return processedStream;
     }
 }

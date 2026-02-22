@@ -1,9 +1,11 @@
 package com.d3rrick.kafkawithavro.app.config;
 
 import com.d3rrick.kafkawithavro.User;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
@@ -81,5 +83,22 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.setCommonErrorHandler(errorHandler);
         return factory;
+    }
+
+    @Bean
+    public NewTopic usersTopic() {
+        return TopicBuilder.name("users-topic")
+                .partitions(3) // High-scale ready
+                .replicas(1)   // Use 3 in production for high availability
+                .compact()     // Optional: If you want to keep the latest version of a user
+                .build();
+    }
+
+    @Bean
+    public NewTopic processedUsersTopic() {
+        return TopicBuilder.name("processed-users-topic")
+                .partitions(3)
+                .replicas(1)
+                .build();
     }
 }

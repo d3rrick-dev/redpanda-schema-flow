@@ -4,9 +4,9 @@ POST http://localhost:8080/users/send
 Content-Type: application/json
 
 {
-  "id":"123",
-  "name":"Derrick",
-  "email":"derrick@hu.com",
+  "id":"34522",
+  "name":"Derr",
+  "email":"derrick@test.com",
   "phoneNumber":"555-0199"
 }
 
@@ -18,4 +18,15 @@ GET http://localhost:8080/actuator/health
 GET http://localhost:8080/actuator/prometheus
 
 ### Analytics
-GET http://localhost:8080/analytics/domains/hu.com
+### count
+GET http://localhost:8080/analytics/domains/test.com
+
+### Analytics
+### window
+GET http://localhost:8080/analytics/domains/window/test.com
+# returns
+#{
+#  "2026-02-22T17:36:00Z": 1,
+#  "2026-02-22T17:37:00Z": 1
+#}
+
